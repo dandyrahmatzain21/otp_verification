@@ -21,10 +21,10 @@ class _VerificationScreenState extends State<VerificationScreen> {
     noHpUser = widget.noHp;
 
     //replace here
-    twilioPhoneVerify = TwilioPhoneVerify(
-        accountSid: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-        serviceSid: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-        authToken: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
+        twilioPhoneVerify = TwilioPhoneVerify(
+        accountSid: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+        serviceSid: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+        authToken: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
     //until here
   }
 
@@ -63,9 +63,19 @@ class _VerificationScreenState extends State<VerificationScreen> {
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              child: TextField(
+              child: TextFormField(
                 controller: otpCodeController,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                validator: (value) {
+                    if (value!.isEmpty) {
+                        return "Tidak Boleh Kosong";
+                      } else if (value!.length < 6) {
+                        return "Kode Kurang Dari 6";
+                      }
+                  return null;
+                },
                 keyboardType: TextInputType.number,
+                maxLength: 6,
                 // inputFormatters: <TextInputFormatter>[
                 //   FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                 //   FilteringTextInputFormatter.digitsOnly
@@ -118,14 +128,20 @@ class _VerificationScreenState extends State<VerificationScreen> {
       if (twilioResponse.successful!) {
         if (twilioResponse.verification?.status == VerificationStatus.approved) {
           print('Phone number is approved');
+          ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("No Ponsel Sudah Terverifikasi")));
         } else {
           print('Invalid code');
+          ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Maaf Kode Yang Anda Masukan Salah")));
         }
       } else {
         print(twilioResponse.errorMessage);
       }
     } else {
       print("Kode OTP kurang dari 6");
+      ScaffoldMessenger.of(context)
+      .showSnackBar(SnackBar(content: Text("Maaf Kode Yang Anda Masukan Salah")));
     }
   }
 
@@ -137,8 +153,12 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
     if (twilioResponse.successful!) {
       print("send code success");
+      ScaffoldMessenger.of(context)
+      .showSnackBar(SnackBar(content: Text("Kode Sukses Dikirim")));
     } else {
       print("send code failed : ${twilioResponse.errorMessage}");
+      ScaffoldMessenger.of(context)
+      .showSnackBar(SnackBar(content: Text("Kode Tidak Terkirim")));
     }
 
   }
