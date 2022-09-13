@@ -40,10 +40,10 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     //replace here
-    twilioPhoneVerify = TwilioPhoneVerify(
-        accountSid: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-        serviceSid: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-        authToken: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
+        twilioPhoneVerify = TwilioPhoneVerify(
+        accountSid: 'ACc770c679c7ca44ac9894868c619e9d34',
+        serviceSid: 'VAb098d53a477c9051a24bc5be0d43bd23',
+        authToken: 'd909fbe3bcf5da627df8264c8c643571');
     //until here
   }
 
@@ -81,18 +81,31 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              child: TextField(
-                controller: noHpController,
-                keyboardType: TextInputType.number,
-                // inputFormatters: <TextInputFormatter>[
-                //   FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                //   FilteringTextInputFormatter.digitsOnly
-                // ],
-                decoration: const InputDecoration(
+              margin: const EdgeInsets.all(16.0),
+              child: TextFormField(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                validator: (value) {
+                  RegExp regex = new RegExp(r'^([1-9])');
+                    if (value!.isEmpty) {
+                        return "Tidak Boleh Kosong";
+                      } else if (!regex.hasMatch(value!)) {
+                        return "No Ponsel Tidak Valid";
+                      } else if (value!.length < 10) {
+                        return "No Ponsel Tidak Valid";
+                      }
+                  return null;
+                },
+                decoration:InputDecoration(
                   border: OutlineInputBorder(),
-                  hintText: 'Masukkan nomor ponsel Anda',
+                  hintText: 'Masukan Nomor Ponsel',
+                  prefix: Padding(
+                    padding: EdgeInsets.all(4),
+                    child: Text('+62'),
+                  ),
                 ),
+                maxLength: 11,
+                keyboardType: TextInputType.number,
+                controller: noHpController,
               ),
             ),
             Container(
@@ -127,24 +140,31 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> verify() async {
+    RegExp regex = new RegExp(r'^([1-9][1-9][1-9][1-9])');
     var noHp = noHpController.text.trim();
-    if (noHp.isNotEmpty && noHp.length >= 11) {
-      print(noHp);
+    if (noHp.isNotEmpty && noHp.length >= 11 && regex.hasMatch(noHp!)) {
+      print('+62'+noHp);
 
       TwilioResponse twilioResponse =
-      await twilioPhoneVerify.sendSmsCode(noHp);
+      await twilioPhoneVerify.sendSmsCode('+62'+noHp);
 
       if (twilioResponse.successful!) {
         print("send code success");
+        ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text("Kode Sudah Dikirim Silahkan Periksa SMS Kamu")));
         Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => VerificationScreen(noHp: noHp)));
-      } else {
+            MaterialPageRoute(builder: (context) => VerificationScreen(noHp: '+62'+noHp)));
+      }else {
+        ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text("No Ponsel Tidak Valid")));
         print("send code failed : ${twilioResponse.errorMessage}");
       }
 
     } else {
       print("Field tidak valid");
+      ScaffoldMessenger.of(context)
+      .showSnackBar(SnackBar(content: Text("No Ponsel Tidak Valid")));
     }
   }
 }
