@@ -41,9 +41,9 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     //replace here
         twilioPhoneVerify = TwilioPhoneVerify(
-        accountSid: 'ACc770c679c7ca44ac9894868c619e9d34',
-        serviceSid: 'VAb098d53a477c9051a24bc5be0d43bd23',
-        authToken: 'd909fbe3bcf5da627df8264c8c643571');
+        accountSid: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+        serviceSid: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+        authToken: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
     //until here
   }
 
